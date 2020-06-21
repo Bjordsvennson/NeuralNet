@@ -71,7 +71,7 @@ public:
 
 		this->biases = new Matrix(neuronCount, 1);
 		biases->Randomize();
-		this->deltaBiases = new Matrix(neuronCount, trainingBatchSize); // could need to be size trainingbatchsize -- was originally a column vector
+		this->deltaBiases = new Matrix(neuronCount, trainingBatchSize);
 	}
 
 	void FeedForward() {
@@ -91,15 +91,10 @@ public:
 		if (this->previousLayer) { // if not input layer
 			this->deltaBiases->COPY(*this->activations); // get this layers activations
 			this->sums->ApplyFunction(this->deltaSums, this->derivative); // sums = σ′(z^L) = delta
-
-			//this->sums->PrintMatrix();
-			//this->deltaSums->PrintMatrix();
-
+			
 			if (!this->nextLayer) { // output layer get error
 				this->deltaBiases->SUB(targets); // errors = (a^L − y) subtract output layer activations from target activations
 				//3b1b says multiply deltabiases by scalar 2 at this point
-				//targets.PrintMatrix();
-				//this->deltaBiases->PrintMatrix();
 			}
 			else { // hidden layer get error
 				this->deltaWeightsTmp->Transpose(*this->nextLayer->weights); // deltaActivations = (w^(l+1))^T
@@ -112,13 +107,6 @@ public:
 
 			//this->deltaWeights->MUL(*this->previousLayer->activations, *this->errors); this is what the book says but not what the code he distributed actually does
 
-			//this->biases
-
-			// TODO: implement gradient descent correctly
-			//       compute the average derivative of the cost function across the training batch for each neuron in the layer
-			//		 use this to fill a gradient column vector, and apply it to each neuron. Larger batches will make this more efficient.
-			//		 especially, I think, because of our use of matrices as layers.
-
 			Matrix averageDeltaBias = Matrix(this->neuronCount, 1);
 			Matrix averageDeltaWeight = Matrix(this->neuronCount, 1);
 
@@ -130,9 +118,6 @@ public:
 
 			this->biases->SubColumnVector(averageDeltaBias);
 			this->weights->SubColumnVector(averageDeltaWeight);
-
-			//this->deltaBiases->PrintMatrix();
-			//this->deltaWeights->PrintMatrix();
 
 			this->previousLayer->FeedBack(targets, trainingBatchSize);
 		}
