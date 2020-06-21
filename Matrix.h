@@ -32,8 +32,8 @@ public:
 			}
 		}
 	}
-	// definitely gonna need to free and realloc to accomplish this which sucks
-	void Transpose(Matrix& src) { // probably broken as shit, i think its causing writing past the _aligned_malloc memory region
+	
+	void Transpose(Matrix& src) {
 		_aligned_free(this->data);
 		this->data = (float*)_aligned_malloc(sizeof(float) * (src.rows * src.columns), 64);
 
