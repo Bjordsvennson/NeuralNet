@@ -16,8 +16,6 @@ class Layer {
 
 	Matrix* deltaBiases;
 
-	Matrix* errors;
-
 	int neuronCount;
 
 	Layer* previousLayer;
@@ -93,16 +91,16 @@ public:
 			this->sums->ApplyFunction(this->deltaSums, this->derivative); // sums = σ′(z^L) = delta
 			
 			if (!this->nextLayer) { // output layer get error
-				this->deltaBiases->SUB(targets); // errors = (a^L − y) subtract output layer activations from target activations
+				this->deltaBiases->SUB(targets); // deltaBiases = (a^L − y) subtract output layer activations from target activations
 				//3b1b says multiply deltabiases by scalar 2 at this point
 			}
 			else { // hidden layer get error
-				this->deltaWeightsTmp->Transpose(*this->nextLayer->weights); // deltaActivations = (w^(l+1))^T
-				this->deltaBiases->MUL(*this->deltaWeightsTmp, *this->nextLayer->deltaBiases); // errors = (w^(l + 1))^T * δ^(l + 1)
+				this->deltaWeightsTmp->Transpose(*this->nextLayer->weights); // deltaWeightsTmp = (w^(l+1))^T
+				this->deltaBiases->MUL(*this->deltaWeightsTmp, *this->nextLayer->deltaBiases); // deltaBiases = (w^(l + 1))^T * δ^(l + 1)
 			} // w^l_jk = the weight from the k'th neuron in the (l-1)'th layer to the j'th in the l'th layer
 
 			this->deltaBiases->Hadamard(*this->deltaSums);
-			this->deltaActivations->Transpose(*this->previousLayer->activations);
+			this->deltaActivations->Transpose(*this->previousLayer->activations); // the description in the book didn't say to tranpose again, but the python code he provided did, and from testing it seems necessary
 			this->deltaWeights->MUL(*this->deltaBiases, *this->deltaActivations); // deltaWeights = a^(l−1)_k * δ^l_j.
 
 			//this->deltaWeights->MUL(*this->previousLayer->activations, *this->errors); this is what the book says but not what the code he distributed actually does
