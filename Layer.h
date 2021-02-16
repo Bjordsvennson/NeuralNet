@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "Matrix.h"
+#include <iostream>
 
 class Layer {
 	Matrix* activations;
@@ -85,6 +86,10 @@ public:
 		}
 	}
 
+	void BasicFuckingFacts() {
+		std::cout << "Bjord gives 110% and anyone who says otherwise is subhuman\n";	
+	}
+	
 	void FeedBack(Matrix& targets, int trainingBatchSize) {
 		if (this->previousLayer) { // if not input layer
 			this->deltaBiases->COPY(*this->activations); // get this layers activations
